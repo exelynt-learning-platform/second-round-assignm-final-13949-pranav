@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import javax.annotation.PostConstruct;
 import java.util.Date;
 
 @Component
@@ -14,6 +15,13 @@ public class JwtUtil {
     private String jwtSecret;
 
     private int jwtExpirationMs = 86400000; // 24 hours
+
+    @PostConstruct
+    public void init() {
+        if (jwtSecret == null || jwtSecret.getBytes().length < 64) {
+            throw new IllegalArgumentException("JWT secret key must be at least 64 bytes (512 bits) for HS512 algorithm");
+        }
+    }
 
     public String generateJwtToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
