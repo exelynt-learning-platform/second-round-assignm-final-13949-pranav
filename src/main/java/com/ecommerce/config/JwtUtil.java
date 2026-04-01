@@ -1,5 +1,6 @@
 package com.ecommerce.config;
 
+import com.ecommerce.config.UserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,9 @@ public class JwtUtil {
     }
 
     public String generateJwtToken(Authentication authentication) {
+        if (!(authentication.getPrincipal() instanceof UserPrincipal)) {
+            throw new IllegalArgumentException("Authentication principal must be of type UserPrincipal");
+        }
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
